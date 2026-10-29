@@ -169,8 +169,11 @@ class AnsiDecoder:
                 iter_codes = iter(codes)
                 for code in iter_codes:
                     if code == 0:
-                        # reset
+                        # reset (SGR 0 clears attributes/colors, not OSC 8 hyperlink)
+                        link = self.style.link
                         self.style = _Style.null()
+                        if link:
+                            self.style = self.style.update_link(link)
                     elif code in SGR_STYLE_MAP:
                         # styles
                         self.style += _Style.parse(SGR_STYLE_MAP[code])
